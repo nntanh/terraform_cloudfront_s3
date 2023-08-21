@@ -19,17 +19,30 @@ module "s3-bucket" {
   object_ownership         = var.object_ownership
 }
 
-resource "aws_s3_bucket_object" "objects" {
-  for_each = var.html
+resource "null_resource" "copy_to_s3" {
+  count = length(var.bucket)
 
-  bucket = each.value.bucket_name
-  key    = "${each.value.folder_name}/" # Thư mục trong S3 sẽ có cùng tên với folder_name.
-
-  source       = "./source/${each.value.folder_name}/*"
-  content_type = "text/plain"
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws s3 cp ./source/${var.html[count.index]}/ s3://${var.bucket[count.index]}/ --recursive
+    EOT
+  }
 
   depends_on = [module.s3-bucket]
 }
+
+
+# resource "aws_s3_bucket_object" "objects" {
+#   for_each = var.html
+
+#   bucket = each.value.bucket_name
+#   key    = "${each.value.folder_name}/" # Thư mục trong S3 sẽ có cùng tên với folder_name.
+
+#   source       = "./source/${each.value.folder_name}/*"
+#   content_type = "text/plain"
+
+#   depends_on = [module.s3-bucket]
+# }
 
 # module "cloudfront" {
 #   source  = "terraform-aws-modules/cloudfront/aws"
