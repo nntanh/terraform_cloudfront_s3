@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hiển thị Giờ Hiện Tại</title>
+</head>
+<body>
+    <h1>S3 Bucket01:</h1>
+    <p id="current-time"></p>
+
+    <script>
+        function updateClock() {
+            var currentTime = new Date();
+            var hours = currentTime.getHours();
+            var minutes = currentTime.getMinutes();
+            var seconds = currentTime.getSeconds();
+
+            // Thêm số 0 đằng trước nếu giờ, phút, hoặc giây là số đơn
+            hours = (hours < 10 ? "0" : "") + hours;
+            minutes = (minutes < 10 ? "0" : "") + minutes;
+            seconds = (seconds < 10 ? "0" : "") + seconds;
+
+            var timeString = hours + ":" + minutes + ":" + seconds;
+            document.getElementById("current-time").innerHTML = timeString;
+        }
+
+        // Gọi hàm cập nhật đồng hồ mỗi giây
+        setInterval(updateClock, 1000);
+
+        // Cập nhật lần đầu khi trang web được tải
+        updateClock();
+    </script>
+</body>
+</html>
