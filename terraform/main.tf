@@ -24,7 +24,7 @@ resource "null_resource" "copy_to_s3" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      aws s3 cp ./source/${var.html[count.index]}/ s3://${var.bucket[count.index]}/${var.html[count.index]}/ --recursive
+      aws s3 cp ../source/${var.html[count.index]}/ s3://${var.bucket[count.index]}/${var.html[count.index]}/ --recursive
     EOT
   }
 
