@@ -10,13 +10,36 @@ terraform {
   }
 }
 
-module "s3-bucket" {
-  source                   = "terraform-aws-modules/s3-bucket/aws"
-  version                  = "3.14.1"
-  count                    = length(var.bucket)
-  bucket                   = var.bucket[count.index]
-  control_object_ownership = true
-  object_ownership         = var.object_ownership
+# module "s3-bucket" {
+#   source                   = "terraform-aws-modules/s3-bucket/aws"
+#   count                    = length(var.bucket)
+#   bucket                   = var.bucket[count.index]
+#   control_object_ownership = true
+#   object_ownership         = var.object_ownership
+# }
+
+resource "aws_s3_bucket" "s3_buckets" {
+  count = length(var.bucket)
+  bucket = var.bucket[count.index]
+}
+
+resource "aws_s3_bucket_ownership_controls" "s3_bucket_ownership_controls" {
+  count = length(var.bucket)
+
+  bucket = aws_s3_bucket.s3_buckets[count.index].id
+
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
+  count = length(var.bucket)
+
+  bucket = aws_s3_bucket.s3_buckets[count.index].id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "null_resource" "copy_to_s3" {
@@ -28,7 +51,7 @@ resource "null_resource" "copy_to_s3" {
     EOT
   }
 
-  depends_on = [module.s3-bucket]
+  depends_on = [aws_s3_bucket.s3_buckets]
 }
 
 # module "cloudfront" {
