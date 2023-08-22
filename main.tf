@@ -35,4 +35,5 @@ resource "null_resource" "copy_to_s3" {
 #   source  = "terraform-aws-modules/cloudfront/aws"
 #   version = "3.2.1"
 #   count   = length(var.bucket)
+
 # }
